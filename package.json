@@ -1,0 +1,37 @@
+{
+  "name": "analyze-codebase",
+  "description": "Codebase Analyzer",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mtahagocer/analyze-codebase"
+  },
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "bin": {
+    "analyze-project": "dist/index.js"
+  },
+  "scripts": {
+    "cli": "ts-node ./src/index.ts",
+    "start": "node ./dist/index.js",
+    "compile": "npx rimraf dist && npx tsc"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.analyzeCode",
+        "title": "Analyze Codebase"
+      }
+    ]
+  },
+  "devDependencies": {
+    "@types/node": "^20.1.5",
+    "typescript": "^5.0.4",
+    "ts-node": "^10.9.1"
+  },
+  "dependencies": {
+    "chalk": "4.1.0",
+    "cli-table3": "^0.6.3",
+    "commander": "^10.0.1"
+  }
+}
