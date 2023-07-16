@@ -5,11 +5,11 @@
     "type": "git",
     "url": "https://github.com/mtahagocer/analyze-codebase"
   },
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "dist/index.js",
   "license": "MIT",
   "bin": {
-    "analyze-project": "./dist/index.js"
+    "analyze-codebase": "./dist/index.js"
   },
   "scripts": {
     "cli": "ts-node ./src/index.ts",
