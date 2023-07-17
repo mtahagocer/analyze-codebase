@@ -21,12 +21,18 @@ You can install Codebase Analyzer globally using NPM:
 npm install -g analyze-codebase 
 ```
 
+or use with npx
+
+```bash
+npx analyze-codebase ./MyProject --exclude node_modules dist --extensions .tsx .ts
+```
+
 ## Usage
 
 To analyze a directory, use the analyze command followed by the directory path. Here's an example:
 
 ```bash
-analyze-codebase analyze ./src
+analyze-codebase ./MyProject --exclude node_modules dist --extensions .tsx .ts
 ```
 
 ## Options
@@ -45,31 +51,31 @@ analyze-codebase analyze ./src
 Analyze a directory with default options:
 
 ```bash
-analyze-codebase analyze ./src
+analyze-codebase ./src
 ```
 
 Analyze a directory with a specified framework and file extensions:
 
 ```bash
-analyze-codebase analyze ./src -f react --extensions .js .jsx .ts .tsx
+analyze-codebase ./src -f react --extensions .js .jsx .ts .tsx
 ```
 
 Exclude specific directories from the analysis:
 
 ```bash
-analyze-codebase analyze ./src --exclude node_modules dist
+analyze-codebase ./src --exclude node_modules dist
 ```
 
 Analyze only file names
 
 ```bash
-analyze-codebase analyze ./src --exclude node_modules dist --checkFileContent=false
+analyze-codebase ./src --exclude node_modules dist --checkFileContent=false
 ```
 
 Analyze only file content
 
 ```bash
-analyze-codebase analyze ./src --exclude node_modules dist --checkFileNames=false
+analyze-codebase ./src --exclude node_modules dist --checkFileNames=false
 ```
 
 ## Contribution

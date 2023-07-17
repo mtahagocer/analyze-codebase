@@ -33,11 +33,7 @@ export const traverseDirectory = async ({
 
         const filePath = path.join(directory, file.name);
 
-        if (exclude?.length) {
-
-            if (exclude.includes(file.name)) return;
-
-        }
+        if (exclude?.includes?.(file.name)) return;
 
         if (file.isDirectory()) {
 
