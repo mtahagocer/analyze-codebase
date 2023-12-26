@@ -5,7 +5,7 @@
     "type": "git",
     "url": "https://github.com/mtahagocer/analyze-codebase"
   },
-  "version": "1.1.0",
+  "version": "1.1.1",
   "main": "dist/index.js",
   "license": "MIT",
   "bin": {
@@ -14,7 +14,8 @@
   "scripts": {
     "cli": "ts-node ./src/index.ts",
     "start": "node ./dist/index.js",
-    "compile": "npx rimraf dist && npx tsc"
+    "compile": "npx rimraf dist && npx tsc",
+    "publish": "npm run compile && npm publish"
   },
   "devDependencies": {
     "@types/node": "^20.1.5",

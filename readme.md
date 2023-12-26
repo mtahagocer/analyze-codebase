@@ -46,6 +46,8 @@ analyze-codebase ./MyProject --exclude node_modules dist --extensions .tsx .ts
 
 - --checkFileContent [checkFileContent]: Check file content. Default: true.
 
+- -w or --writeJsonOutput [writeJsonOutput]: Write json putput for tracking. Default false
+
 ## Examples
 
 Analyze a directory with default options:
@@ -76,6 +78,17 @@ Analyze only file content
 
 ```bash
 analyze-codebase ./src --exclude node_modules dist --checkFileNames=false
+```
+
+Write json output of this analyze
+
+```bash
+analyze-codebase -w
+```
+or 
+
+```bash
+analyze-codebase --writeJsonOutput
 ```
 
 ## Contribution
