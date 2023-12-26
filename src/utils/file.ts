@@ -1,65 +1,71 @@
-import { Dirent } from 'fs';
-import * as fs from 'fs/promises';
-import * as path from 'path';
-
+import { Dirent } from "fs";
+import * as fs from "fs/promises";
+import * as path from "path";
 
 export interface ITraverseDirectoryProps {
-    directory: string;
+  directory: string;
 
-    exclude?: string[];
+  exclude?: string[];
 
-    extensions?: string[];
+  extensions?: string[];
 
-    checkFileNames?: boolean;
+  checkFileNames?: boolean;
 
-    onFile: (filePath: string) => void;
+  onFile: (filePath: string) => void;
 
-    onDirectory?: (dirPath: string) => void;
-
+  onDirectory?: (dirPath: string) => void;
 }
 
+const blackList = [
+  "node_modules",
+  "dist",
+  "build",
+  "coverage",
+  "public",
+  "test",
+  "tests",
+  "mocks",
+];
 
 export const traverseDirectory = async ({
-    directory,
-    onFile,
-    onDirectory,
-    exclude,
-    extensions,
-    checkFileNames = true,
+  directory,
+  onFile,
+  onDirectory,
+  exclude,
+  extensions,
+  checkFileNames = true,
 }: ITraverseDirectoryProps) => {
-    const files = await fs.readdir(directory, { withFileTypes: true });
+  const files = await fs.readdir(directory, { withFileTypes: true });
 
-    const tasks = files.map(async (file: Dirent) => {
+  const tasks = files.map(async (file: Dirent) => {
+    const filePath = path.join(directory, file.name);
 
-        const filePath = path.join(directory, file.name);
+    if (
+      exclude?.includes?.(file.name) ||
+      file.name.startsWith(".") ||
+      blackList.includes(file.name)
+    )
+      return;
 
-        if (exclude?.includes?.(file.name)) return;
+    if (file.isDirectory()) {
+      onDirectory?.(filePath);
 
-        if (file.isDirectory()) {
+      await traverseDirectory({
+        directory: filePath,
+        onFile,
+        exclude,
+        extensions,
+        onDirectory,
+        checkFileNames,
+      });
+    } else if (checkFileNames) {
+      const ext = path.extname(file.name);
 
-            onDirectory?.(filePath);
+      if (extensions?.length) {
+        if (extensions.includes(ext)) onFile(filePath);
+      } else onFile(filePath);
+    }
+  });
 
-            await traverseDirectory({
-                directory: filePath,
-                onFile,
-                exclude,
-                extensions,
-                onDirectory,
-                checkFileNames,
-            });
-
-        } else if (checkFileNames) {
-
-            const ext = path.extname(file.name);
-
-            if (extensions?.length) {
-
-                if (extensions.includes(ext)) onFile(filePath);
-
-            } else onFile(filePath);
-
-        }
-    });
-
-    await Promise.all(tasks);
+  await Promise.all(tasks);
 };
