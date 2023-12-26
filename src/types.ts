@@ -9,6 +9,8 @@ export interface IAnalysisOptions {
 
     checkFileNames?: boolean;
     checkFileContent?: boolean;
+
+    writeJsonOutput?: boolean;
 }
 
 export interface IViolation {
