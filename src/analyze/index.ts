@@ -48,14 +48,13 @@ export const analyzeCodebase = async (
 
       const { fileNameCase } = analyzeFile(filePath, output);
 
-      //@ts-ignore
       if (fileNameCases[fileNameCase] !== undefined)
         fileNameCases[fileNameCase]! += 1;
       else fileNameCases[fileNameCase] = 0;
     },
   });
 
-  logOutput({
+  await logOutput({
     fileCount,
     fileNameCases,
     options,

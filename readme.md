@@ -48,6 +48,19 @@ analyze-codebase ./MyProject --exclude node_modules dist --extensions .tsx .ts
 
 - -w or --writeJsonOutput [writeJsonOutput]: Write json putput for tracking. Default false
 
+## Black list
+
+analyze-codebase by default have a black list of folder names which don't want to analyze which this directories mostly should be out of analyze (i.e. dist or static files)
+
+- node_modules
+- dist
+- build
+- coverage
+- public
+- test
+- tests
+- mocks
+
 ## Examples
 
 Analyze a directory with default options:
