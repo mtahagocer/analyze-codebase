@@ -5,12 +5,31 @@
     "type": "git",
     "url": "https://github.com/mtahagocer/analyze-codebase"
   },
-  "version": "1.2.0",
+  "version": "1.2.1",
   "main": "dist/index.js",
   "license": "MIT",
   "bin": {
     "analyze-codebase": "./dist/index.js"
   },
+  "keywords": [
+    "codebase",
+    "analyzer",
+    "code-analysis",
+    "static-analysis",
+    "file-analysis",
+    "directory-analysis",
+    "naming-conventions",
+    "code-structure",
+    "file-extensions",
+    "exclude-directories",
+    "js",
+    "ts",
+    "json-output",
+    "recursive",
+    "source-code",
+    "developer-tools",
+    "code-quality"
+  ],
   "scripts": {
     "cli": "ts-node ./src/index.ts",
     "start": "node ./dist/index.js",
