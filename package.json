@@ -32,6 +32,7 @@
   ],
   "scripts": {
     "cli": "ts-node ./src/index.ts",
+    "dev": "ts-node-dev --respawn --transpile-only ./src/index.ts",
     "start": "node ./dist/index.js",
     "compile": "npx rimraf dist && npx tsc",
     "publish": "npm run compile && npm publish"
@@ -39,6 +40,7 @@
   "devDependencies": {
     "@types/node": "^20.1.5",
     "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0",
     "typescript": "^5.0.4"
   },
   "dependencies": {
