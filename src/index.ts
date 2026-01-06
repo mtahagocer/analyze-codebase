@@ -29,7 +29,7 @@ program
     parseBoolean
   )
   .option(
-    "-w --writeJsonOutput [writeJsonOutput]",
+    "-w, --writeJsonOutput [writeJsonOutput]",
     "Write json output",
     parseBoolean
   )

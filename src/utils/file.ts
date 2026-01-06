@@ -98,6 +98,13 @@ export const makeMigrationFromLastFileSystem = async (directory: string) => {
 
   if (data) return;
 
+  // Check if the directory exists before trying to traverse it
+  const directoryExists = await checkFileExist(directory);
+
+  if (!directoryExists) {
+    return;
+  }
+
   console.log(
     chalk.yellow(
       "Migrating data from the last file system to the new file system...\n"
@@ -108,22 +115,27 @@ export const makeMigrationFromLastFileSystem = async (directory: string) => {
 
   const oldAnalyzes: IAnalyzeResult[] = [];
 
-  await traverseDirectory({
-    directory,
-    checkFileNames: true,
-    extensions: [".json"],
-    onFile: async (filePath) => {
-      try {
-        const fileContent: IAnalyzeResult = JSON.parse(
-          await fs.readFile(filePath, "utf-8")
-        );
+  try {
+    await traverseDirectory({
+      directory,
+      checkFileNames: true,
+      extensions: [".json"],
+      onFile: async (filePath) => {
+        try {
+          const fileContent: IAnalyzeResult = JSON.parse(
+            await fs.readFile(filePath, "utf-8")
+          );
 
-        oldAnalyzes.push(fileContent);
-      } catch (error) {
-        console.error(chalk.red(`Error reading the file: ${filePath}.`));
-      }
-    },
-  });
+          oldAnalyzes.push(fileContent);
+        } catch (error) {
+          console.error(chalk.red(`Error reading the file: ${filePath}.`));
+        }
+      },
+    });
+  } catch (error) {
+    // Directory doesn't exist or can't be read, skip migration
+    return;
+  }
 
   if (oldAnalyzes.length) {
     newAnalyzeOutput = {
