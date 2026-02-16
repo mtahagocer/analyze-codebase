@@ -10,6 +10,9 @@ export interface IAnalysisOptions {
   checkFileContent?: boolean;
 
   writeJsonOutput?: boolean;
+  showProgress?: boolean;
+  parallel?: boolean;
+  maxConcurrency?: number;
 }
 
 export interface IViolation {

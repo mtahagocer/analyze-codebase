@@ -1,164 +1,241 @@
+<p align="center">
+  <h1 align="center">analyze-codebase</h1>
+  <p align="center">
+    <strong>Know your codebase. Fix what's broken. Ship with confidence.</strong>
+  </p>
+  <p align="center">
+    <a href="https://www.npmjs.com/package/analyze-codebase"><img src="https://img.shields.io/npm/v/analyze-codebase.svg?style=flat-square&color=blue" alt="npm version"></a>
+    <a href="https://www.npmjs.com/package/analyze-codebase"><img src="https://img.shields.io/npm/dm/analyze-codebase.svg?style=flat-square&color=green" alt="npm downloads"></a>
+    <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square" alt="License: MIT"></a>
+    <a href="https://github.com/mtahagocer/analyze-codebase"><img src="https://img.shields.io/github/stars/mtahagocer/analyze-codebase?style=flat-square" alt="GitHub stars"></a>
+  </p>
+</p>
 
-# Codebase Analyzer
+---
 
-Codebase Analyzer is a command-line tool that analyzes a specified directory and provides summary information about the code files it contains. It can help you gain insights into your codebase's structure, naming conventions, and content types.
+A zero-config CLI that scans your entire project in seconds and gives you a clear picture of what's inside: **file structure**, **naming conventions**, **code-vs-comment ratios**, and most uniquely, **unused i18n translation keys** that bloat your bundles.
 
-![Example Image](./example-output.png)
+```bash
+npx analyze-codebase ./src
+```
 
+That's it. No config needed.
+
+## Why analyze-codebase?
+
+| Problem | Solution |
+|---------|----------|
+| "How consistent are our naming conventions?" | Detects 13+ naming cases (camelCase, PascalCase, kebab-case, snake_case...) |
+| "How much of our code is actually comments?" | Breaks down physical lines, source code, comments, TODOs, empty lines |
+| "We have hundreds of translation keys. Which ones are unused?" | Scans your entire codebase for unused i18n keys and safely removes them |
+| "I need a report for my team" | Export as **HTML**, **CSV**, or **JSON** with one flag |
+| "I want this running in my workflow" | Watch mode, CI/CD friendly, config file support |
+
+## Quick Start
+
+```bash
+# Install globally
+npm install -g analyze-codebase
+
+# Or run instantly with npx
+npx analyze-codebase .
+```
+
+### Setup a config file (optional)
+
+```bash
+analyze-codebase init
+```
+
+This creates `.analyze-codebase.json` in your project root with your preferred settings. After that, just run `analyze-codebase` - it auto-discovers your config.
 
 ## Features
 
-- Analyzes the specified directory recursively
-- Provides summary information about file name cases and content types
-- Supports filtering by file extensions and excluding specific directories/files
-- Customizable through command-line options
+### 1. Codebase Structure Analysis
 
-## Installation
+Recursively scans your project and provides a breakdown of:
 
-You can install Codebase Analyzer globally using NPM:
-
-```bash
-npm install -g analyze-codebase 
-```
-
-or use with npx
+- **File naming conventions** - Are your files consistently named? camelCase? PascalCase? kebab-case? You'll see the exact distribution.
+- **Code content metrics** - Physical lines, source code lines, comments, block comments, single-line comments, TODOs, empty lines.
+- **Smart defaults** - Automatically excludes `node_modules`, `dist`, `build`, `coverage`, `.git`, `.next`, `public`, `test`, `tests`, `mocks`.
 
 ```bash
-npx analyze-codebase ./MyProject --exclude node_modules dist --extensions .tsx .ts
+# Analyze TypeScript files in your src directory
+analyze-codebase ./src --extensions ts tsx
+
+# Analyze with a specific framework tag
+analyze-codebase ./src -f react --extensions ts tsx js jsx
 ```
 
-## Usage
+> **Tip:** Extensions work with or without the dot prefix - both `ts` and `.ts` are accepted.
 
-To analyze a directory, use the analyze command followed by the directory path. Here's an example:
+### 2. Unused i18n Translation Key Detection
+
+This is the feature that sets `analyze-codebase` apart. If you work with internationalization, you know the pain: translation files grow over time, keys get orphaned, and nobody knows which ones are still in use.
 
 ```bash
-analyze-codebase ./MyProject --exclude node_modules dist --extensions .tsx .ts
+analyze-codebase ./src --i18n-file locales/en.json
 ```
 
-## Options
+**What it does:**
 
-- -f, --framework <framework>: Specify the framework used in the codebase.
-- -e, --extensions <extensions...>: Specify the file extensions to include in the analysis. You can provide multiple extensions separated by spaces. Example: -e .js .ts.
+1. Parses your translation JSON (supports deeply nested structures)
+2. Flattens all keys to dot-notation paths (e.g., `common.buttons.submit`)
+3. Scans every source file in your project for usage
+4. Shows you exactly which keys are unused
+5. Asks for confirmation, then safely removes them
 
-- -e, --exclude <exclude...>: Specify directories or files to exclude from the analysis. You can provide multiple paths separated by spaces. Example: -e node_modules dist.
+**Supported patterns** - it understands how real apps use translations:
 
-- --checkFileNames [checkFileNames]: Check file names. Default: true.
+```js
+// All of these are detected:
+t('key')                    // react-i18next, i18next
+t("key")                    // double quotes
+t(`key`)                    // template literals
+i18n.t('key')               // direct i18n object access
+$t('key')                   // Vue i18n
+translate('key')            // custom translate functions
 
-- --checkFileContent [checkFileContent]: Check file content. Default: true.
+// Even dynamic keys:
+t(`namespace.${variable}`)  // template literal interpolation
+t('namespace.' + variable)  // string concatenation
+```
 
-- -w or --writeJsonOutput [writeJsonOutput]: Write json putput for tracking. Default false
+When dynamic keys are detected, all child keys under that namespace are automatically marked as used - preventing false positives.
 
-## Black list
+### 3. Export Reports
 
-analyze-codebase by default have a black list of folder names which don't want to analyze which this directories mostly should be out of analyze (i.e. dist or static files)
-
-- node_modules
-- dist
-- build
-- coverage
-- public
-- test
-- tests
-- mocks
-
-## Examples
-
-Analyze a directory with default options:
+Generate shareable reports in three formats:
 
 ```bash
-analyze-codebase ./src
+# Beautiful styled HTML report
+analyze-codebase ./src --export html --output report.html
+
+# Spreadsheet-friendly CSV
+analyze-codebase ./src --export csv --output data.csv
+
+# Structured JSON for programmatic use
+analyze-codebase ./src --export json --output results.json
 ```
 
-Analyze a directory with a specified framework and file extensions:
+The HTML report includes styled tables, gradient headers, and is ready to share with your team or stakeholders.
+
+### 4. Watch Mode
+
+Automatically re-runs analysis whenever files change. Perfect for development:
 
 ```bash
-analyze-codebase ./src -f react --extensions .js .jsx .ts .tsx
+analyze-codebase ./src --watch
 ```
 
-Exclude specific directories from the analysis:
+- 500ms debounce to prevent excessive runs
+- Graceful Ctrl+C shutdown
+- Works with all analysis options
+
+### 5. Parallel Processing
+
+Files are processed in parallel with auto-optimized concurrency:
+
+| Project Size | Default Concurrency |
+|-------------|-------------------|
+| < 100 files | 20 concurrent ops |
+| 100-500 files | 25 concurrent ops |
+| 500+ files | 30 concurrent ops |
 
 ```bash
-analyze-codebase ./src --exclude node_modules dist
+# Override if needed
+analyze-codebase ./src --max-concurrency 50
 ```
 
-Analyze only file names
+## All CLI Options
+
+```
+Usage: analyze-codebase [directory] [options]
+
+Options:
+  -f, --framework <name>          Tag the framework (react, vue, angular...)
+  -e, --extensions <ext...>       File extensions to include (ts tsx js jsx)
+  -exc, --exclude <dirs...>       Additional directories to exclude
+  --checkFileNames [bool]         Analyze file naming conventions (default: true)
+  --checkFileContent [bool]       Analyze code content metrics (default: true)
+  -w, --writeJsonOutput [bool]    Write JSON output to track changes over time
+  --i18n-file <path>              Path to i18n JSON file for unused key detection
+  --watch                         Re-analyze automatically on file changes
+  --no-progress                   Disable progress bar (useful for CI/CD)
+  --max-concurrency <number>      Max parallel file operations (default: auto)
+  --export <format>               Export as json, csv, or html
+  --output <path>                 Output file path for export
+
+Commands:
+  init                            Create .analyze-codebase.json interactively
+```
+
+## Config File
+
+Create `.analyze-codebase.json` in your project root (or run `analyze-codebase init`):
+
+```json
+{
+  "extensions": [".ts", ".tsx", ".js", ".jsx"],
+  "exclude": ["node_modules", "dist", "build"],
+  "checkFileNames": true,
+  "checkFileContent": true,
+  "framework": "react",
+  "showProgress": true,
+  "parallel": true
+}
+```
+
+The config is auto-discovered by searching up the directory tree. CLI flags always take precedence over config values.
+
+## Real-World Examples
+
+### Code Review Preparation
 
 ```bash
-analyze-codebase ./src --exclude node_modules dist --checkFileContent=false
+# Get a full picture before a code review
+analyze-codebase ./src --extensions ts tsx --export html --output review.html
 ```
 
-Analyze only file content
+### CI/CD Pipeline
 
 ```bash
-analyze-codebase ./src --exclude node_modules dist --checkFileNames=false
+# Silent mode for CI - just export the data
+analyze-codebase ./src --no-progress --export json --output analysis.json
 ```
 
-Write json output of this analyze
+### Translation Cleanup Sprint
 
 ```bash
-analyze-codebase -w
+# Find and remove all unused translation keys
+analyze-codebase ./src --i18n-file public/locales/en.json --extensions ts tsx
 ```
-or 
+
+### Monorepo Analysis
 
 ```bash
-analyze-codebase --writeJsonOutput
+# Analyze specific packages
+analyze-codebase ./packages/web --extensions ts tsx -f react
+analyze-codebase ./packages/api --extensions ts -f express
 ```
 
-## Contribution
+## Contributing
 
-We welcome contributions to enhance the functionality and features of Codebase Analyzer. To contribute to the project, please follow these steps:
+Contributions are welcome! Here's how:
 
-Fork the repository by clicking on the "Fork" button at the top right corner of this page.
-
-Clone the forked repository to your local machine:
-
-```bash
-git clone https://github.com/your-username/analyze-codebase.git
-```
-
-Create a new branch for your feature or bug fix:
-
-```bash
-git checkout -b feature/your-feature-name
-```
-
-or 
-
-
-```bash
-git checkout -b bugfix/your-bug-fix
-```
-
-Make your modifications and additions to the codebase.
-
-Test your changes thoroughly to ensure they do not introduce any issues.
-
-Commit your changes with a descriptive commit message:
-
-```bash
-git commit -m "Add your commit message here"
-```
-
-Push your changes to your forked repository:
-
-```bash
-git push origin feature/your-feature-name
-```
-or
-
-```bash
-git push origin bugfix/your-bug-fix
-```
-
-Open a pull request (PR) from your forked repository to the original repository. Provide a clear and concise description of your changes in the PR.
-
-Wait for the maintainers to review your PR. They may provide feedback or request additional changes.
-
-Once your PR is approved, it will be merged into the main branch, and your contributions will become a part of the Codebase Analyzer project.
-
-Please ensure that you adhere to our code of conduct and follow the guidelines provided in the CONTRIBUTING.md file for a smooth and collaborative contribution process.
-
-Thank you for your interest in improving Codebase Analyzer! Your contributions are highly appreciated.
+1. Fork the repository
+2. Create your branch: `git checkout -b feature/amazing-feature`
+3. Make your changes and test them: `npm test`
+4. Commit: `git commit -m "feat: add amazing feature"`
+5. Push: `git push origin feature/amazing-feature`
+6. Open a Pull Request
 
 ## License
-This project is licensed under the MIT License.
+
+MIT - see [LICENSE](./LICENSE) for details.
+
+---
+
+<p align="center">
+  <sub>Built by <a href="https://github.com/mtahagocer">Taha Gocer</a></sub>
+</p>
